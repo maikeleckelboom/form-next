@@ -1,0 +1,27 @@
+@import "variables";
+
+.clickable {
+  cursor: pointer;
+}
+
+.no-wrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: rem-calc(128);
+}
+
+.sub-text {
+  font-size: rem-calc(15);
+  color: lighten($app-black, 25%);
+}
+
+p {
+  font-size: rem-calc(16);
+  font-weight: 500;
+  margin: 0;
+}
+
+.text-center {
+  text-align: center;
+}

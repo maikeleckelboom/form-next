@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&display=swap');
+
+// CSS Variables
+:root {
+  --app-theme-color: #0082A0;
+  --app-theme-color-red: #fff;
+  --app-theme-color-green: #fff;
+  --app-theme-color-blue: #fff;
+  --app-theme-color-threshold: 0.5;
+  --app-theme-color-border-threshold: 0.8;
+  --app-theme-btn-color: #FFFFFF;
+  --app-theme-btn-background: var(--app-theme-color);
+  --max-width-grid-container: 100%;
+  --primary-color: #0071fe;
+  --error-color: #f23648;
+  --error-bg-color: #fddfe2;
+  --success-color: #21a67a;
+  --success-bg-color: #e0eee4;
+}
+
+@import "abstracts/index";
+@import "atoms/index";
+@import "molecules/index";
+
+
+html {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: inherit;
+
+  &::before, &::after {
+    box-sizing: inherit;
+  }
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: $app-background;
+  color: $app-font-color;
+  font-family: $app-font-family;
+  font-size: 0.9em;
+  font-weight: 400;
+  line-height: 1.2;
+  background: #f7f7f7;
+  box-sizing: border-box;
+
+  &::after,
+  &::before {
+    box-sizing: border-box;
+  }
+}
+
+
+// _______________________________
+.v-layout-page {
+
+  .download-btn-container {
+    max-width: 38em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+
+    > .grid-x {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+
+      .grid-item {
+        width: 100%;
+      }
+    }
+  }
+
+  .fieldset-x {
+    display: inline-flex;
+    width: 100%;
+
+    > .inner-fieldset {
+      width: 50%;
+
+      &:nth-child(1) {
+        padding-right: rem-calc(8);
+      }
+
+      &:nth-child(2) {
+        padding-left: rem-calc(8);
+      }
+    }
+  }
+}
+
+// _______________________________
+.app-grid-blocks {
+  > * {
+    grid-gap: rem-calc(20);
+    padding: 0 rem-calc(18);
+    display: grid;
+    align-content: center;
+    grid-template-columns: repeat(2, 1fr);
+
+    @include set-breakpoint(tablet, down) {
+      grid-template-columns:  repeat(2, 1fr);
+    }
+    @include set-breakpoint(smartphone, down) {
+      grid-template-columns:  1fr;
+    }
+  }
+
+
+}
+
+.centered {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.standalone-form-component {
+  //max-width: 34em;
+  //margin: 0 auto;
+  //padding: 2em 0;
+}
+
+.standalone-form-wrapper {
+  background: $white;
+  border: solid rem-calc(2) transparent;
+  border-radius: $app-field-border-radius;
+  padding: rem-calc(32) rem-calc(12);
+  margin: 0 auto rem-calc(24);
+  $shadow-size: rem-calc(4);
+  box-shadow: rgba(0, 0, 0, 0.04) 0 $shadow-size calc(#{$shadow-size} * 0.5);
+}
+
+.standalone-form-logo {
+  margin: 0 0 2.4em;
+}
+
+.standalone-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+  padding-right: rem-calc(6);
+
+  @include set-breakpoint(smartphone, down) {
+    padding-right: rem-calc(18);
+  }
+}
+
+.standalone-form-title-text {
+  margin: 0 0 rem-calc(14);
+
+  > * {
+    color: #383838;
+  }
+
+  h1 {
+    margin: 0 0 rem-calc(12) 0;
+    font-size: rem-calc(24);
+  }
+
+  p {
+  }
+}
+
+.standalone-form {
+
+}
+
+.text-right {
+  text-align: right;
+}
+
+.alert-message {
+  color: lighten(#c65102, -0%);
+  font-style: italic;
+}
+
+.field-error-message {
+  padding: rem-calc(12) rem-calc(6) 0 rem-calc(6);
+  display: flex;
+  color: $dark-red;
+  font-weight: 600;
+}
+
+.field-help-message {
+  display: flex;
+  margin-bottom: rem-calc(-10);
+  justify-content: flex-start;
+  align-items: flex-end;
+  height: rem-calc(26);
+  padding: 0 rem-calc(6);
+
+  &.success-message {
+    color: var(--success-color);
+    font-weight: 500;
+  }
+}
+
+.mask-helper-control {
+
+}
+
+.vee-helper {
+  position: relative;
+  top: rem-calc(-16);
+
+  &.v-primary {
+    padding: 0 rem-calc(6) rem-calc(12);
+  }
+
+  &.v-secondary {
+    padding: 0 rem-calc(6) rem-calc(6);
+    top: rem-calc(-20);
+  }
+
+  .suggest-message {
+    position: relative;
+    color: lighten($black, 25%);
+    font-size: rem-calc(15);
+    font-style: italic;
+  }
+}
+
+.app-logo,
+.app-logo-xsm,
+.app-logo-slogan,
+.app-logo-slogan-only {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.app-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: rem-calc(104);
+  max-width: rem-calc(118);
+  height: rem-calc(29.35);
+}
+
+.app-logo-slogan-only {
+  width: 100%;
+  max-width: rem-calc(200);
+  min-width: rem-calc(176);
+  padding: rem-calc(12);
+  margin-top: rem-calc(4);
+}
+
+.addition-text {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: rem-calc(16);
+  user-select: none;
+  padding-right: rem-calc(4);
+  padding-left: rem-calc(4);
+}
+
+.vee-helper {
+  padding: rem-calc(12) rem-calc(4);
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.po-password-strength-meter {
+  padding-left: rem-calc(2);
+  padding-right: rem-calc(2);
+}
+
+.po-password-strength-bar {
+  position: relative;
+  background: #f8f8f8;
+  margin-top: rem-calc(18);
+
+  &::before,
+  &::after {
+    content: '';
+    width: rem-calc(2);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
+
+  &::before {
+
+  }
+
+  &::after {
+
+  }
+}
+
+
+.standalone-form {
+
+}
+
+
+.text-block-center {
+  margin: 0 auto;
+  text-align: center;
+}

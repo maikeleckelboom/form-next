@@ -1,0 +1,374 @@
+@import "../abstracts/index";
+
+.text-block-center {
+  margin: 0 auto;
+  text-align: center;
+}
+
+form {
+  padding: 1em 0;
+}
+
+input,
+select,
+textarea,
+datalist {
+  box-sizing: border-box;
+  background: none;
+  width: 100%;
+  font-size: rem-calc(16);
+  font-family: $app-font-family;
+  transition: $app-field-transition-easing $app-field-transition-property $app-field-transition-duration;
+  box-shadow: none;
+  display: flex;
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: rem-calc(38);
+  @include app-field-border;
+  @include appearence-none;
+
+  &::before,
+  &::after {
+    box-sizing: border-box;
+  }
+
+  &:not(textarea) {
+    height: rem-calc(45);
+  }
+}
+
+
+.smart-placeholder {
+  $border-radius: rem-calc(2);
+  display: flex;
+  font-size: rem-calc(13);
+  font-weight: $app-font-bold;
+  letter-spacing: rem-calc(0.5);
+  line-height: 1;
+  padding: rem-calc(6) rem-calc(8);
+  position: absolute;
+  text-transform: uppercase;
+  transition: all 180ms ease;
+  width: max-content;
+  z-index: 29;
+  background: $white;
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+  left: rem-calc(8);
+  color: lighten($app-black, 50%);
+  pointer-events: none;
+  opacity: 0;
+  top: 0;
+  // Alternative Effect
+  // opacity: 1;
+  // top: 50%;
+  // transform: translate(0, -50%);
+  .focused &,
+  .readonly & {
+    opacity: 1;
+    z-index: 9;
+    color: $app-black;
+    top: rem-calc(-20);
+    font-size: rem-calc(12);
+    left: rem-calc(10);
+    // Alternative Effect
+    // top: rem-calc(-10);
+  }
+}
+
+$input-field-height: rem-calc(45);
+.vee-field-control {
+  height: $input-field-height;
+  position: relative;
+
+  > .input {
+    position: relative;
+    padding-left: rem-calc(12);
+  }
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+
+  .autocomplete-placeholder {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    opacity: 0.5;
+    pointer-events: none;
+    padding: rem-calc(12) rem-calc(38) rem-calc(12) rem-calc(12);
+
+  }
+}
+
+
+.field-wrapper {
+  background: transparent;
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  margin: rem-calc(18) 0;
+  border: 0;
+  padding: 0;
+
+  .control {
+    position: relative;
+    padding: 0 rem-calc(6);
+    display: flex;
+    flex-direction: column;
+  }
+
+  &.submit {
+    margin-bottom: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  &.has-meter {
+    margin-bottom: rem-calc(0);
+
+    .field-additions.out-type {
+      top: rem-calc(-14);
+    }
+
+    .Password.password-strength-meter {
+      max-width: 100%;
+    }
+
+    .Password__strength-meter {
+      margin: rem-calc(18) auto rem-calc(18);
+    }
+  }
+
+  &:not(&.has-additions) {
+    &.has-meter {
+      .Password__strength-meter {
+        margin: rem-calc(22) auto rem-calc(8);
+      }
+    }
+  }
+
+  &.has-additions {
+    &.has-meter {
+      margin-bottom: rem-calc(12);
+    }
+  }
+
+  &.has-out-additional {
+    margin-bottom: rem-calc(38);
+  }
+
+  &.checkbox {
+    margin-bottom: rem-calc(22);
+  }
+}
+
+.field-additional-item {
+  &.right-bottom {
+    right: 0;
+    bottom: 0;
+  }
+
+  &.right-top {
+    right: 0;
+    top: 0;
+  }
+
+  &.left-bottom {
+    left: 0;
+    bottom: 0;
+  }
+
+  &.left-top {
+    top: 0;
+    left: 0;
+  }
+}
+
+.input-feedback-field {
+  padding-top: 0;
+  padding-left: rem-calc(2);
+  padding-right: rem-calc(2);
+}
+
+.icon-feedback-field {
+  height: rem-calc(16);
+  position: absolute;
+  top: rem-calc(14);
+  right: rem-calc(22);
+  z-index: 9;
+
+  .select & {
+    right: rem-calc(60);
+  }
+
+  .color & {
+    right: rem-calc(120);
+  }
+}
+
+.error-tooltip-message {
+  position: absolute;
+  z-index: 999;
+  background: $dark-red;
+  color: $white;
+  border-radius: rem-calc(4);
+  padding: rem-calc(8) rem-calc(12);
+  top: rem-calc(-52);
+  right: 0;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  font-size: rem-calc(14);
+
+  ::first-letter {
+    text-transform: uppercase;
+  }
+
+  > span {
+    position: relative;
+    top: rem-calc(1);
+    text-align: center;
+  }
+
+  &::after {
+    $size: rem-calc(5);
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    bottom: -$size;
+    width: 0;
+    height: 0;
+    border: $size solid transparent;
+    border-top-color: $dark-red;
+    border-bottom-width: 0;
+  }
+}
+
+input[name='password'],
+input[name='password_confirmation'],
+input[name='confirmation_password'],
+input[name='confirm_password'],
+input[name='password_confirm'] {
+  text-transform: initial;
+}
+
+input[disabled='disabled'],
+.input.disabled {
+  .read-only &,
+  .readonly & {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: rem-calc(68);
+  }
+}
+
+.control {
+  position: relative;
+
+  &.focused {
+
+  }
+}
+
+input,
+input[type='text'],
+input[type='password'],
+input[type='submit'],
+input[type='reset'],
+input[type='radio'],
+input[type='checkbox'],
+input[type='button'],
+input[type='image'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='email'],
+input[type='month'],
+input[type='number'],
+input[type='url'],
+input[type='week'],
+input[type='search'],
+input[type='tel'],
+input[type='color'],
+input[type='color']::after,
+input[type='file'],
+input[type='file']::before,
+textarea,
+select {
+  outline: none;
+
+
+  :focus, .focused & {
+    //@include dashed-background();
+  }
+
+  .valid &,
+  .success & {
+    //border-color: var(--success-color)
+  }
+
+  .valid.focused & {
+    //
+  }
+
+  .invalid &,
+  .has-error & {
+    //:not(.disabled) {
+    border-color: $app-field-border-invalid;
+    animation-name: shake;
+    animation-duration: 800ms;
+    //}
+  }
+
+  .has-error.focused &,
+  .invalid.focused & {
+    border-color: lighten($app-field-border-invalid, 10%);
+  }
+
+  .touched & {
+  }
+
+  .pristine & {
+  }
+
+  .validated & {
+  }
+
+  .required & {
+  }
+
+  .passed & {
+  }
+}
+
+.vee-validation-form {
+  .btn-primary {
+    margin-top: rem-calc(22);
+  }
+}
+
+//
+$total-columns: 24;
+$col-widths: ();
+.field-wrapper {
+  @for $i from 1 through $total-columns {
+    @for $j from 1 through $i {
+      $w: ($j/$i);
+      @if not index($col-widths, $w) {
+        &.columns-#{$j}-#{$i} {
+          width: $w * 100%;
+        }
+        $col-widths: append($col-widths, $w, comma);
+      }
+    }
+  }
+
+
+}
+
+
