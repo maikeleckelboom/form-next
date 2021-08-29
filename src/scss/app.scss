@@ -21,6 +21,7 @@
 @import "abstracts/index";
 @import "atoms/index";
 @import "molecules/index";
+@import "templates/index";
 
 
 html {
@@ -107,28 +108,18 @@ body {
     grid-template-columns: repeat(2, 1fr);
 
     @include set-breakpoint(tablet, down) {
-      grid-template-columns:  repeat(2, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
+
     @include set-breakpoint(smartphone, down) {
-      grid-template-columns:  1fr;
+      grid-template-columns: 1fr;
+      padding: 0;
     }
   }
-
-
-}
-
-.centered {
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 .standalone-form-component {
-  //max-width: 34em;
-  //margin: 0 auto;
-  //padding: 2em 0;
+  overflow: hidden;
 }
 
 .standalone-form-wrapper {
@@ -157,11 +148,23 @@ body {
   }
 }
 
+.standalone-form-heading {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+}
+
+.standalone-form-option-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .standalone-form-title-text {
   margin: 0 0 rem-calc(14);
+  padding: 0 rem-calc(10);
 
   > * {
-    color: #383838;
+    color: #0a284b;
   }
 
   h1 {
@@ -194,12 +197,15 @@ body {
 }
 
 .field-help-message {
-  display: flex;
   margin-bottom: rem-calc(-10);
   justify-content: flex-start;
   align-items: flex-end;
-  height: rem-calc(26);
+  height: rem-calc(34);
   padding: 0 rem-calc(6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
 
   &.success-message {
     color: var(--success-color);
@@ -221,7 +227,7 @@ body {
 
   &.v-secondary {
     padding: 0 rem-calc(6) rem-calc(6);
-    top: rem-calc(-20);
+    top: rem-calc(-24);
   }
 
   .suggest-message {

@@ -7,16 +7,18 @@
           :class="{'focused': focused}"
           @focus="setFocus(true)"
           @blur="setFocus(false)">
-    {{ text }}
+    <span v-if="!loading">{{ text }}</span>
+    <span v-else>Loadingz</span>
   </button>
 </template>
 
 <script>
 import {getCurrentInstance, onMounted, ref} from "vue";
+import {generateUniqueID} from "@/mixins";
 
 export default {
   name: 'PrimaryButton',
-  inheritAttrs: false,
+  inheritAttrs: true,
   props: {
     text: {
       type: String,
@@ -26,10 +28,13 @@ export default {
       type: String,
       default: 'submit',
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    }
   },
   setup() {
-    const uidGenerator = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    const uid = uidGenerator()
+    const uid = generateUniqueID()
 
     function buttonHoverEffect(element) {
       element.onmousemove = (e) => {
@@ -73,7 +78,7 @@ export default {
     height: var(--size);
     background: radial-gradient(circle, #e3e1e7, #e3e1e7, transparent);
     transform: translate(-50%, -50%);
-    transition: width 120ms ease-out, height 120ms ease;
+    //transition: ease-in-out width, height 140ms;
     border-radius: 20%;
     mix-blend-mode: color-burn; // multiply ~ soft-light ~ color-burn
   }
@@ -89,7 +94,8 @@ export default {
 
   &:focus,
   &:focus-visible {
-    filter: hue-rotate(43deg);
+    transition-duration: 240ms;
+    filter: hue-rotate(20deg);
   }
 
   &:focus {

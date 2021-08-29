@@ -1,8 +1,7 @@
 <template>
   <Transition name="fade-slide">
     <div v-if="focused && message && message.length"
-         class="error-tooltip-message"
-         key="error">
+         class="error-tooltip-message">
       <span>{{ message }}</span>
     </div>
   </Transition>
@@ -10,7 +9,7 @@
 
 <script>
 export default {
-  name: 'ErrorMessageTooltip',
+  name: 'ErrorTooltip',
   props: {
     message: {
       type: String,

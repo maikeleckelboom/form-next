@@ -1,6 +1,5 @@
 <template>
-  <a v-if="passwordFields.includes(name)"
-     @click="handleClick()" class="btn-link addition-text text-right">
+  <a @click="handleClick()" class="btn-link addition-text text-right">
     {{ showPassword ? 'Wachtwoord Verbergen' : 'Wachtwoord Weergeven' }}
   </a>
 </template>
@@ -16,17 +15,13 @@ export default {
       required: true,
       type: String,
     },
-    passwordFields: {
-      required: true,
-      type: Array,
-    }
   },
-  setup(props, context) {
-    let showPassword = ref(false)
+  setup(props, {emit}) {
+    const showPassword = ref(false)
 
     function handleClick() {
-      context.emit('togglePassword', {value: this.showPassword, name: props.name})
-      this.showPassword = !this.showPassword
+      emit('togglePassword', {value: showPassword, name: props.name})
+      showPassword.value = !showPassword.value
     }
 
     return {

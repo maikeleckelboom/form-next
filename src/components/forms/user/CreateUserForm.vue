@@ -1,314 +1,285 @@
 <template>
   <StandaloneForm title="Nieuw Account Aanmaken"
-                  header-text="Hier kunt u voor iemand anders een account aan maken">
-    <p>De gebruiker krijgt automatisch een e-mail met zijn/haar inloggegevens.</p>
-    <pre>{{ localState.suggestions }}</pre>
+                  header-text="Voeg een nieuwe gebruiker toe aan het Yoot-netwerk.">
     <Form @submit="onSubmit"
-          :validation-schema="schema"
-          class="vee-validation-form"
+          :validation-schema="validationSchema"
+          v-slot="{values, handleChange, submitCount, isSubmitting }"
+          class="validation-form"
           ref="form">
-      <TextField v-model="formValues.full_name"
-                 :value="formValues.full_name"
-                 name="full_name"
-                 type="text"
-                 v-maska="`X* X* X* X* X*`"
-                 label="Volledige Naam"
-                 placeholder="Volledige Naam"
-                 :success-message="parseName(formValues.full_name).classified"
-                 autocomplete="name"/>
-      <TextField v-model="formValues.address"
-                 :value="formValues.address"
-                 v-on:keydown="deduce('address', $event.target.value)"
-                 v-on:keydown.delete="handleKeydownEvent($event)"
-                 :suggestion="localState.suggestions.address"
-                 name="address"
-                 type="text"
-                 label="Adres"
-                 placeholder="Adres"
-                 autocomplete="on"
-                 :columns="16"/>
-      <TextField v-model="formValues.postcode"
-                 :value="formValues.postcode"
-                 v-on:keydown="deduce('postcode', $event.target.value)"
-                 v-on:keydown.delete="handleKeydownEvent($event)"
-                 :suggestion="localState.suggestions.postcode"
-                 name="postcode"
-                 v-maska="`#### AA`"
-                 type="text"
-                 label="postcode"
-                 placeholder="Postcode"
-                 autocomplete="on"
-                 :columns="8"/>
-      <TextField v-model="formValues.city"
-                 :value="formValues.city"
-                 v-on:keydown="deduce('city', $event.target.value)"
-                 v-on:keydown.delete="handleKeydownEvent($event)"
-                 :suggestion="localState.suggestions.city"
-                 name="city"
-                 type="text"
-                 v-maska="`#### AA`"
-                 label="Plaats"
-                 placeholder="Plaats"
-                 autocomplete="on"/>
-      <TextField v-model="formValues.phone"
-                 :value="formValues.phone"
-                 v-maska="`+31 ######*`"
-                 name="phone"
-                 type="tel"
-                 label="Telefoon"
-                 placeholder="Telefoon"
-                 autocomplete="tel"/>
-      <TextField v-model="formValues.company"
-                 :value="formValues.company"
-                 name="company"
-                 type="text"
-                 label="Bedrijf"
-                 placeholder="Bedrijf"
-                 autocomplete="on"
-                 columns="10"/>
-      <TextField v-model="formValues.kvk_number"
-                 :value="formValues.kvk_number"
-                 name="kvk_number"
-                 type="text"
-                 label="KVK-nummer"
-                 placeholder="KVK-nummer"
-                 autocomplete="on"
-                 columns="14"/>
-      <TextField v-model="formValues.brl_certification_number"
-                 :value="formValues.brl_certification_number"
-                 name="brl_certification_number"
-                 type="text"
-                 label="BRL-certificatienummer"
-                 placeholder="BRL-certificatienummer"
-                 autocomplete="on"/>
-      <PrimaryButton type="submit" text="Account Aanmaken"/>
+      <section class="personalia-section">
+        <div class="section-heading">
+          <h1 class="section-title">Contactgegevens</h1>
+        </div>
+        <TextField v-model="formValues.full_name"
+                   :value="formValues.full_name"
+                   @keydown="onKeydown($event)"
+                   name="full_name"
+                   type="text"
+                   v-mask="'X* X* X* X* X*'"
+                   label="Volledige Naam"
+                   placeholder="Volledige Naam"
+                   :success-message="parseName(formValues.full_name).classified"
+                   autocomplete="name"
+                   v-focus/>
+        <TextField v-model="formValues.email"
+                   :value="formValues.email"
+                   @keydown="onKeydown($event)"
+                   v-mask="'X*@X*.X*'"
+                   name="email"
+                   type="email"
+                   label="E-mailadres"
+                   placeholder="E-mailadres"
+                   autocomplete="email"/>
+        <TextField v-model="formValues.phone"
+                   :value="formValues.phone"
+                   @keydown="onKeydown($event)"
+                   name="phone"
+                   type="tel"
+                   label="Telefoon"
+                   placeholder="Telefoon"
+                   autocomplete="tel"/>
+      </section>
+      <section class="address-data-section">
+        <div class="section-heading">
+          <h1 class="section-title">Adresgegevens</h1>
+        </div>
+        <FieldRow :template-columns="{left: 12, right: 12}">
+          <template v-slot:left>
+            <TextField v-model="formValues.postcode"
+                       :value="formValues.postcode"
+                       @keydown="onKeydown($event)"
+                       name="postcode"
+                       v-mask="'#### AA*'"
+                       type="text"
+                       label="postcode"
+                       placeholder="Postcode"
+                       autocomplete="zip"/>
+          </template>
+          <template v-slot:right>
+            <TextField v-model="formValues.building_number"
+                       :value="formValues.building_number"
+                       @keydown="onKeydown($event)"
+                       v-mask="'X* X*'"
+                       name="building_number"
+                       type="text"
+                       label="Huisnummer en toevoeging"
+                       placeholder="Huisnummer en toevoeging"
+                       autocomplete="on"/>
+          </template>
+        </FieldRow>
+        <!---->
+        <Switch v-model="ADDRESS_LOOKUP_ENABLED"
+                :value="ADDRESS_LOOKUP_ENABLED"
+                :name="`ADDRESS_LOOKUP_ENABLED`"
+                :label="ADDRESS_LOOKUP_ENABLED
+                  ? 'Uw adres wordt automatisch aangevuld'
+                  : 'Uw adres handmatig in vullen'"/>
+        <!---->
+        <TextField v-model="formValues.street_name"
+                   :value="formValues.street_name"
+                   @keydown="onKeydown($event)"
+                   :class="ADDRESS_LOOKUP_ENABLED ? 'disabled' : 'enabled'"
+                   :disabled="ADDRESS_LOOKUP_ENABLED"
+                   tooltip-helper-text="Dit veld kan automatisch worden ingevuld"
+                   name="street_name"
+                   type="text"
+                   label="Straat"
+                   placeholder="Straat"
+                   autocomplete="on"/>
+        <TextField v-model="formValues.city"
+                   :value="formValues.city"
+                   @keydown="onKeydown($event)"
+                   v-mask="`X* X* X* X* X* X*`"
+                   :class="ADDRESS_LOOKUP_ENABLED ? 'disabled' : 'enabled'"
+                   :disabled="ADDRESS_LOOKUP_ENABLED"
+                   tooltip-helper-text="Dit veld kan automatisch worden ingevuld"
+                   name="city"
+                   type="text"
+                   label="Plaats"
+                   placeholder="Plaats"
+                   autocomplete="on"/>
+      </section>
+      <section class="company-section">
+        <div class="section-heading">
+          <h1 class="section-title">Accounttype</h1>
+        </div>
+        <FieldsetToggle value-active="Bedrijf"
+                        value-inactive="Particulier"
+                        value="Particulier"
+                        tabindex="0">
+          <TextField v-model="formValues.company"
+                     :value="formValues.company"
+                     @keydown="onKeydown($event)"
+                     name="company"
+                     type="text"
+                     label="Naam"
+                     placeholder="Naam"
+                     autocomplete="on"/>
+          <TextField v-model="formValues.website"
+                     :value="formValues.website"
+                     @keydown="onKeydown($event)"
+                     tooltip-helper-text="Dit veld is optioneel"
+                     name="website"
+                     type="url"
+                     label="Website"
+                     placeholder="Website"
+                     autocomplete="on"/>
+          <TextField v-model="formValues.kvk_number"
+                     :value="formValues.kvk_number"
+                     @keydown="onKeydown($event)"
+                     tooltip-helper-text="Dit veld is optioneel"
+                     name="kvk_number"
+                     type="text"
+                     label="KVK-nummer"
+                     placeholder="KVK-nummer"
+                     autocomplete="on"/>
+          <TextField v-model="formValues.brl_certification_number"
+                     :value="formValues.brl_certification_number"
+                     @keydown="onKeydown($event)"
+                     tooltip-helper-text="Dit veld is optioneel"
+                     name="brl_certification_number"
+                     type="text"
+                     label="BRL-certificatienummer"
+                     placeholder="BRL-certificatienummer"
+                     autocomplete="on"/>
+        </FieldsetToggle>
+      </section>
+      <section class="button-section">
+        <PrimaryButton type="submit"
+                       text="Account Aanmaken"
+                       @keydown="onKeydown($event)"
+                       :loading="!!(state.loading || isSubmitting)"
+                       :disabled="!!(state.loading || isSubmitting)"/>
+      </section>
     </Form>
   </StandaloneForm>
 </template>
 
 
 <script>
+import {focusTouchingInputField, parseName, isUpperCase, removeProperties, fakeApiRequest, infoBalloon,} from '@/mixins'
+import {ref, unref, reactive, computed} from "vue";
+import {Form, useForm} from "vee-validate";
+import * as Yup from "yup";
 import TextField from "@/components/forms/elements/TextField.vue";
 import PrimaryButton from "@/components/buttons/PrimaryButton.vue";
 import StandaloneForm from "@/components/templates/StandaloneForm.vue";
-import {Form, useForm, useFormValues} from "vee-validate";
-import * as Yup from "yup";
-import {computed, onMounted, reactive, ref} from "vue";
-// Mapboxgl with MapboxGeocoder
-// See: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-// import mapboxgl from 'mapbox-gl';
-// import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-// import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-// onMounted(() => {
-//   new MapboxGeocoder({
-//     accessToken: mapbox.accessToken,
-//     mapboxgl: mapboxgl,
-//     types: 'region, place, postcode', // 'country, region, place, postcode, locality, neighborhood',
-//     countries: 'nl',
-//     bbox: [3.032227, -50.680797, 7.602539, -53.644638], // The Netherlands
-//   });
-// })
+import FieldsetToggle from "@/components/forms/FieldsetToggle.vue";
+import FieldRow from "@/components/templates/FieldRow.vue";
+import Tooltip from "@/components/misc/Tooltip.vue";
+import Switch from "@/components/forms/elements/Switch.vue";
 
 export default {
   name: "CreateUserForm",
-  components: {StandaloneForm, PrimaryButton, TextField, Form},
-
-  setup: () => {
-
-    const schema = Yup.object().shape({
-      full_name: Yup.string().required(),
-      phone: Yup.string().required(),
-      postcode: Yup.string().required(),
-      address: Yup.string().required(),
-      city: Yup.string().required(),
-      company: Yup.string().required(),
-      kvk_number: Yup.number().required(),
-      brl_certification_number: Yup.string().required(),
+  components: {
+    Switch,
+    Tooltip,
+    FieldsetToggle,
+    FieldRow,
+    StandaloneForm,
+    PrimaryButton,
+    TextField,
+    Form
+  },
+  setup() {
+    const validationSchema = computed(() => Yup.object().shape({
+      full_name: Yup.string().min(2).required().label('Naam'),
+      email: Yup.string().email().required().label('E-mailadres'),
+      phone: Yup.string().min(6).required().label('Telefoon'),
+      postcode: Yup.string().min(6).required().label('Postcode'),
+      building_number: Yup.string().min(1).required().label('Huisnummer en toevoeging'),
+      street_name: Yup.string().label('Straat')
+          .when("ADDRESS_LOOKUP_ENABLED", {
+            is: false,
+            then: Yup.string().min(2).required()
+          }),
+      city: Yup.string().label('Plaats')
+          .when("ADDRESS_LOOKUP_ENABLED", {
+            is: false,
+            then: Yup.string().min(2).required()
+          }),
+      company: Yup.string().label('Naam')
+          .when("ACCOUNT_TYPE_IS_COMPANY", {
+            is: false,
+            then: Yup.string().min(2).required()
+          }),
+      kvk_number: Yup.string().optional().label('KVK-nummer'),
+      website: Yup.string().optional().label('Website'),
+      brl_certification_number: Yup.string().optional().label('BRL-certificatienummer'),
       created_on: Yup.date().default(() => new Date()),
-    })
+      ACCOUNT_TYPE_IS_COMPANY: Yup.boolean().label('Accounttype'),
+      ADDRESS_LOOKUP_ENABLED: Yup.boolean().label('Adres'),
+    }))
+
+    const validationConditionals = {
+      ADDRESS_LOOKUP_ENABLED: true,
+      ACCOUNT_TYPE_IS_COMPANY: false,
+    }
 
     const initialValues = {
       full_name: '',
+      email: '',
       phone: '',
       postcode: '',
-      address: '',
+      building_number: '',
+      street_name: '',
       city: '',
+      website: '',
       company: '',
       kvk_number: '',
       brl_certification_number: '',
+      ...validationConditionals,
     }
 
-    const form = useForm({validationSchema: schema, initialValues})
+    const form = useForm({
+      validationSchema,
+      initialValues
+    })
 
     const formValues = reactive({
       ...initialValues
     })
 
-    const localState = reactive({
-      suggestions: {
-        postcode: '',
-        address: '',
-        city: '',
-      },
+    const ADDRESS_LOOKUP_ENABLED = unref(initialValues.ADDRESS_LOOKUP_ENABLED)
+    const ACCOUNT_TYPE_IS_COMPANY = unref(initialValues.ACCOUNT_TYPE_IS_COMPANY)
+
+    const state = reactive({
+      loading: false,
     })
 
-    function clearPlaceholder() {
-      localState.suggestions = {
-        address: '',
-        postcode: '',
-        city: '',
-      }
-    }
+    const onSubmit = (async (values) => {
+      setloading(true)
+      const uppercaseKeys = Object.keys(values).filter(key => isUpperCase(key))
+      const cleaned = removeProperties(values, ...uppercaseKeys)
+      await fakeApiRequest()
+      setloading(false)
+    })
 
-    function handleKeydownEvent(event) {
+    const setloading = (bool) => state.loading = bool
+
+    const onKeydown = (event) => {
       const {key} = event
-      console.log('v-on:keydown', key, event)
       switch (key) {
-        case 'Backspace':
-          clearPlaceholder()
+        case 'ArrowUp':
+          focusTouchingInputField(event, 'prev')
+          break;
+        case 'ArrowDown':
+          focusTouchingInputField(event, 'next')
           break;
       }
     }
 
-    const mapbox = {
-      accessToken: 'pk.eyJ1IjoibWFpa2VsZTAxIiwiYSI6ImNrZ2d2NnFycjA1MjUydHBnNGUyN2dra3MifQ.oSjzPcw2LATvsokT1UIi2A',
-      country: 'nl',
-    }
-
-    async function deduce(type, searchQuery) {
-      const values = await searchRelatedLocationValues(type, searchQuery)
-      const allowed = Object.keys(values).filter(key => values[key] !== undefined)
-
-      const filteredValues = Object.keys(values)
-          .filter(key => allowed.includes(key))
-          .reduce((obj, key) => {
-            obj[key] = values[key]
-            return obj
-          }, {})
-
-      console.log(filteredValues)
-
-
-      window.addEventListener('keydown', (evt) => {
-        if (evt.key === 'Enter') {
-          console.log('KLABANGS!')
-
-          Object.entries(filteredValues).forEach(([key, value]) => {
-            // if (key === type) return
-            console.log(key, value)
-            Object.assign(formValues, {[key]: value})
-          })
-        }
-      })
-
-
-
-
-    }
-
-    function searchRelatedLocationValues(type, searchQuery) {
-      return new Promise((resolve, reject) => {
-        if (searchQuery.length >= 2) {
-          console.log(encodeURI(searchQuery))
-          return fetch(`https://api.mapbox.com/v4/geocode/mapbox.places/${encodeURI(searchQuery)}.json?country=${mapbox.country}&access_token=${mapbox.accessToken}`)
-              .then((response => response.json()))
-              .then((data) => {
-                let address
-                let postcode
-                let city
-                if (data && data.features && data.features.length) {
-                  const location = data.features.first()['place_name'].split(',')
-                  const placeType = data.features.first()['place_type']
-                  const addressfield = placeType.includes('address')
-                  const postcodeField = placeType.includes('postcode')
-                  if (addressfield) {
-                    const postcodeCity = location[1].split(' ')
-                    postcode = `${postcodeCity[1]} ${postcodeCity[2]}`
-                    city = postcodeCity[3]
-                    Object.assign(localState.suggestions, {address: location[0], postcode, city})
-                  } else if (postcodeField) {
-                    city = location[1]
-                    Object.assign(localState.suggestions, {postcode: location[0], city})
-                  } else {
-                    Object.assign(localState.suggestions, {city: location[0]})
-                  }
-                }
-                resolve({
-                  postcode,
-                  address,
-                  city,
-                })
-              })
-              .catch(error => reject(error.response || error))
-        }
-      })
-    }
-
-    function onSubmit(values) {
-      const {firstName, middleNames, lastName, classified} = parseName(values.full_name)
-      console.log('submit', values)
-    }
-
-    function stringify(array) {
-      return array.reduce((pre, next) => {
-        return pre + ' ' + next
-      })
-    }
-
-    function everythingBetween(array) {
-      array.splice(0, 1)
-      array.splice(array.length - 1, 1)
-      return stringify(array)
-    }
-
-    function countWhitespaces(string) {
-      return string.split(' ').length - 1
-    }
-
-    function countWords(str) {
-      return str.split(' ').filter((n) => n !== '').length;
-    }
-
-    function parseName(fullName) {
-      let firstName = ''
-      let middleNames = ''
-      let lastName = ''
-      let classified = ''
-      if (fullName && typeof fullName === 'string' && fullName.length) {
-        const wordsArray = fullName.split(' ')
-        const wordsNum = countWords(fullName)
-        if (wordsNum >= 1) {
-          firstName = wordsArray.first()
-        }
-        if (wordsNum >= 2) {
-          lastName = wordsArray[wordsArray.length - 1]
-        }
-        if (wordsNum >= 3) {
-          middleNames = everythingBetween(wordsArray);
-        }
-        classified = wordsNum >= 4 ? '✔ voornaam | ✔ tussenvoegsels | ✔ achternaam'
-            : wordsNum === 3 ? '✔ voornaam | ✔ tussenvoegsel | ✔ achternaam'
-                : wordsNum === 2 ? '✔ voornaam | ✔ achternaam'
-                    : wordsNum === 1 ? '✔ voornaam' : ''
-      }
-      return {
-        firstName,
-        middleNames,
-        lastName,
-        fullName,
-        classified
-      }
-    }
-
     return {
-      schema,
-      parseName,
-      onSubmit,
-      deduce,
+      ADDRESS_LOOKUP_ENABLED,
+      ACCOUNT_TYPE_IS_COMPANY,
+      validationSchema,
       initialValues,
       formValues,
-      localState: localState,
-      handleKeydownEvent
+      onSubmit,
+      state,
+      infoBalloon,
+      onKeydown,
+      parseName,
     };
   },
 };

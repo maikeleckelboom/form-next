@@ -3,12 +3,12 @@
                   header-text="Het aanvragen van een nieuw wachtwoord."
                   footer-text="Inloggen">
     <Form @submit="onSubmit"
-          :validation-schema="validationSchema"
-          class="vee-validation-form"
+          :validation-validationSchema="validationSchema"
+          class="validation-form"
           ref="form">
       <TextField
           v-model="validationSchema.email"
-          v-maska="`X*@X*.X*`"
+          v-mask="`X*@X*.X*`"
           pattern="/^\S+@\S+\.\S+$/"
           name="email"
           type="email"

@@ -84,6 +84,7 @@ button {
     .button-text {
       @include transition(all, 0.45s, cubic-bezier(0.65, 0, .076, 1));
       position: absolute;
+      inset: 0;
       top: 0;
       left: 0;
       right: 0;
@@ -115,5 +116,4 @@ button {
     }
   }
 }
-
 </style>

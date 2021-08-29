@@ -1,17 +1,20 @@
 @import "functions";
 // Typography
 $app-font-family: 'Hind', sans-serif;
+$input-field-height: rem-calc(45);
 
 // Base Variables
 $app-blue-medium: #0582a3;
 $app-blue-dark-primary: #09315f;
 $app-blue-middle: #4e7390;
 $app-blue-middle-focus: darken(#4e7390, 10%);
-$app-field-file-icon: url('../../../../v-formset/src/assets/icons/up-arrow.svg');
+$app-field-file-icon: url('./public/assets/icons/up-arrow.svg');
+
 // Default Colors
 $black: #000;
 $white: #ffffff;
 $dark-red: #d44040;
+$dark-red-light: lighten($dark-red, 5%);
 
 // App Colors
 $app-white: #ffffff;
@@ -44,17 +47,17 @@ $card-max-width: 20em;
 $app-font-bold: 600;
 
 // App Form
-$app-field-border: $app-blue-middle;
-$app-field-border-active: lighten($app-blue-middle, 10%);
-$app-field-border-focus: #4e7390;
-$app-field-border-focus: #0074a0;
-//$app-field-border-focus: #184375;
 $app-field-border: #5084af;
-$app-field-border-active: #0D3562;
+$app-field-border-focus: #0074a0;
+$app-field-border-active: lighten(#0D3562, 10%);
+
 $app-field-border-invalid: #d44040;
+$app-field-border-invalid: $dark-red-light;
 $app-field-border-valid: #2BAE66FF;
+
 $app-field-border-radius: rem-calc(4);
 $app-field-padding: rem-calc(12);
+
 $app-field-transition-easing: ease;
 $app-field-transition-property: all;
 $app-field-transition-duration: .2s;

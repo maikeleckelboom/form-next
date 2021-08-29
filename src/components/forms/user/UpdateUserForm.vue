@@ -2,14 +2,15 @@
   <StandaloneForm title="Accountgegevens Aanpassen"
                   header-text="Update resource voor interne app gebruikers.">
     <Form @submit="onSubmit"
-          :validation-schema="schema"
-          class="vee-validation-form"
+          :validation-validationSchema="validationSchema"
+          :initial-values="validationSchema.values"
+          class="validation-form"
           ref="form">
       <TextField v-model="formValues.full_name"
                  :value="formValues.full_name"
                  name="full_name"
                  type="text"
-                 v-maska="`X* X* X* X* X*`"
+                 v-mask="`X* X* X* X* X*`"
                  label="Volledige Naam"
                  placeholder="Volledige Naam"
                  :success-message="parseName(formValues.full_name).classified"
@@ -39,7 +40,7 @@
                  autocomplete="on"/>
       <TextField v-model="formValues.phone"
                  :value="formValues.phone"
-                 v-maska="`+31 ######*`"
+                 v-mask="`+31 ######*`"
                  name="phone"
                  type="tel"
                  label="Telefoon"
@@ -51,16 +52,14 @@
                  type="text"
                  label="Bedrijf"
                  placeholder="Bedrijf"
-                 autocomplete="on"
-                 columns="10"/>
+                 autocomplete="on"/>
       <TextField v-model="formValues.kvk_number"
                  :value="formValues.kvk_number"
                  name="kvk_number"
                  type="text"
                  label="KVK-nummer"
                  placeholder="KVK-nummer"
-                 autocomplete="on"
-                 columns="14"/>
+                 autocomplete="on"/>
       <TextField v-model="formValues.brl_certification_number"
                  :value="formValues.brl_certification_number"
                  name="brl_certification_number"
@@ -75,11 +74,12 @@
 
 <script>
 import TextField from "@/components/forms/elements/TextField.vue";
-import {Form, useForm, useFormValues} from "vee-validate";
+import {Form, useForm} from "vee-validate";
 import * as Yup from "yup";
 import PrimaryButton from "@/components/buttons/PrimaryButton.vue";
 import StandaloneForm from "@/components/templates/StandaloneForm.vue";
 import '@/prototypes'
+import {parseName, stringify} from '@/mixins'
 import {reactive} from "vue";
 
 
@@ -89,7 +89,7 @@ export default {
 
   setup: () => {
 
-    const schema = Yup.object().shape({
+    const validationSchema = Yup.object().shape({
       full_name: Yup.string().required(),
       phone: Yup.string().required(),
       address: Yup.string().required(),
@@ -113,7 +113,7 @@ export default {
       brl_certification_number: 'AA28ID72AE22',
     }
 
-    const form = useForm({validationSchema: schema, initialValues})
+    const form = useForm({validationSchema: validationSchema, initialValues})
 
     const formValues = reactive({
       ...initialValues
@@ -126,60 +126,8 @@ export default {
     }
 
 
-
-    function stringify(array) {
-      return array.reduce((pre, next) => {
-        return pre + ' ' + next
-      })
-    }
-
-    function everythingBetween(array) {
-      array.splice(0, 1)
-      array.splice(array.length - 1, 1)
-      return stringify(array)
-    }
-
-    function countWhitespaces(string) {
-      return string.split(' ').length - 1
-    }
-
-    function countWords(str) {
-      return str.split(' ').filter((n) => n !== '').length;
-    }
-
-    function parseName(fullName) {
-      let firstName = ''
-      let middleNames = ''
-      let lastName = ''
-      let classified = ''
-      if (fullName && typeof fullName === 'string' && fullName.length) {
-        const wordsArray = fullName.split(' ')
-        const numberOfWords = countWords(fullName)
-        if (numberOfWords >= 1) {
-          firstName = wordsArray.first()
-        }
-        if (numberOfWords >= 2) {
-          lastName = wordsArray[wordsArray.length - 1]
-        }
-        if (numberOfWords >= 3) {
-          middleNames = everythingBetween(wordsArray);
-        }
-        classified = numberOfWords >= 4 ? '✔ voornaam | ✔ tussenvoegsels | ✔ achternaam'
-            : numberOfWords === 3 ? '✔ voornaam | ✔ tussenvoegsel | ✔ achternaam'
-                : numberOfWords === 2 ? '✔ voornaam | ✔ achternaam'
-                    : numberOfWords === 1 ? '✔ voornaam' : ''
-      }
-      return {
-        firstName,
-        middleNames,
-        lastName,
-        fullName,
-        classified
-      }
-    }
-
     return {
-      schema,
+      validationSchema,
       parseName,
       onSubmit,
       formValues

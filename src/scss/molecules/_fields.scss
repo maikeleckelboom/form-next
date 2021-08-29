@@ -1,12 +1,74 @@
 @import "../abstracts/index";
 
+$font-base-color: #0a284b;
+
 .text-block-center {
   margin: 0 auto;
   text-align: center;
 }
 
+.po-password-strength-bar.secure {
+  background: $app-green;
+}
+
+.section-title {
+  font-size: rem-calc(22);
+  color: #0a284b;
+  margin: rem-calc(12) 0;
+  padding: 0 rem-calc(10);
+}
+
+.optional-field-wrapper {
+
+}
+
+section {
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: rem-calc(18);
+    width: 100%;
+
+    .icon-info {
+      top: rem-calc(1);
+    }
+  }
+
+  &.personalia-section {
+
+  }
+
+  &.address-data-section {
+
+  }
+
+  &.company-section {
+
+  }
+
+  &.button-section {
+    padding: 0 rem-calc(6);
+  }
+}
+
+
 form {
   padding: 1em 0;
+
+  &.form-fieldset {
+    padding: 0;
+  }
+}
+
+input,
+select,
+textarea {
+  :not([type='checkbox']),
+  :not([type='radio']) {
+    @include appearence-none;
+  }
 }
 
 input,
@@ -28,7 +90,7 @@ datalist {
   white-space: nowrap;
   padding-right: rem-calc(38);
   @include app-field-border;
-  @include appearence-none;
+  margin: 0;
 
   &::before,
   &::after {
@@ -44,13 +106,12 @@ datalist {
 .smart-placeholder {
   $border-radius: rem-calc(2);
   display: flex;
-  font-size: rem-calc(13);
+  font-size: rem-calc(14.2);
   font-weight: $app-font-bold;
   letter-spacing: rem-calc(0.5);
   line-height: 1;
   padding: rem-calc(6) rem-calc(8);
   position: absolute;
-  text-transform: uppercase;
   transition: all 180ms ease;
   width: max-content;
   z-index: 29;
@@ -58,52 +119,71 @@ datalist {
   border-bottom-left-radius: $border-radius;
   border-bottom-right-radius: $border-radius;
   left: rem-calc(8);
-  color: lighten($app-black, 50%);
+  color: lighten($app-black, 5%);
   pointer-events: none;
   opacity: 0;
   top: 0;
-  // Alternative Effect
-  // opacity: 1;
-  // top: 50%;
-  // transform: translate(0, -50%);
+  text-transform: capitalize;
+
+  @include set-breakpoint(smartphone, down) {
+    max-width: rem-calc(160);
+  }
+
+  @include set-breakpoint(mobile, down) {
+    max-width: rem-calc(145);
+  }
+
   .focused &,
-  .readonly & {
+  .readonly &,
+  .active & {
     opacity: 1;
     z-index: 9;
-    color: $app-black;
-    top: rem-calc(-20);
-    font-size: rem-calc(12);
+    top: rem-calc(-22);
     left: rem-calc(10);
-    // Alternative Effect
-    // top: rem-calc(-10);
+  }
+
+  .label-text {
+
   }
 }
 
-$input-field-height: rem-calc(45);
-.vee-field-control {
+.autocomplete-placeholder {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  opacity: 0.5;
+  pointer-events: none;
+  padding: rem-calc(12) rem-calc(38) rem-calc(12) rem-calc(12);
+  border: none;
+  outline: none;
+  background: none;
+  font-weight: 400;
+}
+
+.suggestion-placeholder {
+  padding-left: rem-calc(12);
+  padding-top: rem-calc(16);
+  top: 0;
+  position: absolute;
+  left: rem-calc(1);
+  opacity: 0.4;
+  line-height: inherit;
+}
+
+.field-self {
   height: $input-field-height;
   position: relative;
 
   > .input {
     position: relative;
     padding-left: rem-calc(12);
+    padding-top: rem-calc(16);
   }
 
   &::first-letter {
     text-transform: uppercase;
   }
-
-  .autocomplete-placeholder {
-    position: absolute;
-    top: 50%;
-    transform: translate(0, -50%);
-    opacity: 0.5;
-    pointer-events: none;
-    padding: rem-calc(12) rem-calc(38) rem-calc(12) rem-calc(12);
-
-  }
 }
-
 
 .field-wrapper {
   background: transparent;
@@ -120,12 +200,26 @@ $input-field-height: rem-calc(45);
     padding: 0 rem-calc(6);
     display: flex;
     flex-direction: column;
+
+
   }
 
   &.submit {
     margin-bottom: 0;
     flex-direction: row;
     flex-wrap: nowrap;
+  }
+
+  &.has-tooltip {
+
+    .control {
+
+      &.invalid, &.valid {
+        .input-icon-parent {
+          padding-right: rem-calc(32);
+        }
+      }
+    }
   }
 
   &.has-meter {
@@ -195,6 +289,17 @@ $input-field-height: rem-calc(45);
   padding-right: rem-calc(2);
 }
 
+.control.valid.disabled {
+  .tooltip {
+    right: rem-calc(60);
+  }
+}
+
+.highlight {
+  color: lighten($font-base-color, 5%);
+  font-size: rem-calc(18);
+}
+
 .icon-feedback-field {
   height: rem-calc(16);
   position: absolute;
@@ -212,14 +317,16 @@ $input-field-height: rem-calc(45);
 }
 
 .error-tooltip-message {
+  $background-color: $dark-red-light;
   position: absolute;
   z-index: 999;
-  background: $dark-red;
+  background: $background-color;
   color: $white;
   border-radius: rem-calc(4);
   padding: rem-calc(8) rem-calc(12);
-  top: rem-calc(-52);
-  right: 0;
+  //top: rem-calc(-54);
+  top: rem-calc(-42);
+  right: rem-calc(8);
   display: flex;
   width: max-content;
   align-items: center;
@@ -239,13 +346,12 @@ $input-field-height: rem-calc(45);
     $size: rem-calc(5);
     content: '';
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
+    right: rem-calc(18);
     bottom: -$size;
     width: 0;
     height: 0;
     border: $size solid transparent;
-    border-top-color: $dark-red;
+    border-top-color: $background-color;
     border-bottom-width: 0;
   }
 }
@@ -260,6 +366,8 @@ input[name='password_confirm'] {
 
 input[disabled='disabled'],
 .input.disabled {
+  opacity: 0.5;
+
   .read-only &,
   .readonly & {
     overflow: hidden;
@@ -275,6 +383,7 @@ input[disabled='disabled'],
 
   }
 }
+
 
 input,
 input[type='text'],
@@ -301,7 +410,7 @@ input[type='file']::before,
 textarea,
 select {
   outline: none;
-
+  padding-right: rem-calc(40);
 
   :focus, .focused & {
     //@include dashed-background();
@@ -346,29 +455,46 @@ select {
   }
 }
 
-.vee-validation-form {
+.validation-form {
   .btn-primary {
     margin-top: rem-calc(22);
   }
 }
 
-//
-$total-columns: 24;
-$col-widths: ();
-.field-wrapper {
-  @for $i from 1 through $total-columns {
-    @for $j from 1 through $i {
-      $w: ($j/$i);
-      @if not index($col-widths, $w) {
-        &.columns-#{$j}-#{$i} {
-          width: $w * 100%;
-        }
-        $col-widths: append($col-widths, $w, comma);
-      }
-    }
-  }
 
+
+
+//
+
+.section-heading {
 
 }
+.validation-option-buttons {
+
+
+   > .icon-container {
+
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,0 +1,18 @@
+@import "../abstracts";
+
+$total-columns: 24;
+$col-widths: ();
+
+.grid-item {
+  @for $i from 1 through $total-columns {
+    @for $j from 1 through $i {
+      $w: ($j/$i);
+      @if not index($col-widths, $w) {
+        &.columns-#{$j}-#{$i} {
+          width: $w * 100%;
+        }
+        $col-widths: append($col-widths, $w, comma);
+      }
+    }
+  }
+}

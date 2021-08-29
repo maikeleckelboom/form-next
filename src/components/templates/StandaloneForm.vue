@@ -5,12 +5,16 @@
         <img :src="logoPath" class="app-logo" alt="Yoot"/>
         <img :src="sloganPath" class="app-logo-slogan-only" alt="Exited for the future"/>
       </div>
-      <div class="standalone-form-title-text">
-        <h1>{{ title }}</h1>
-        <p>{{ headerText }}</p>
+      <div class="standalone-form-heading">
+        <div class="standalone-form-title-text">
+          <h1>{{ title }}</h1>
+          <p>{{ headerText }}</p>
+        </div>
+        <div class="standalone-form-option-icons">
+        </div>
       </div>
       <div class="standalone-form">
-        <slot />
+        <slot/>
       </div>
     </div>
     <div class="standalone-form-footer">
@@ -20,8 +24,12 @@
 </template>
 
 <script>
+import Tooltip from "@/components/misc/Tooltip.vue";
+import {question} from '@/mixins'
+
 export default {
   name: 'StandaloneForm',
+  components: {Tooltip},
   props: {
     title: {
       type: String,
@@ -45,7 +53,8 @@ export default {
     const sloganPath = new URL('/assets/logo/YOOT_SLOGAN_ONLY.png', import.meta.url)
     return {
       logoPath,
-      sloganPath
+      sloganPath,
+      question
     }
   }
 }

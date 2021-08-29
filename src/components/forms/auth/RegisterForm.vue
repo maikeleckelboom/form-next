@@ -2,21 +2,22 @@
   <StandaloneForm title="Registreren"
                   header-text="Een nieuw account aanmaken.">
     <Form @submit="onSubmit"
-          :validation-schema="schema"
-          class="vee-validation-form"
+          :validation-schema="validationSchema"
+          class="validation-form"
           ref="form">
       <TextField
-          v-model="schema.full_name"
+          v-model="formValues.full_name"
+          :value="formValues.full_name"
           name="full_name"
           type="text"
-          v-maska="{ mask: `X*-X*-X*-X*-X*`, tokens: { '-': { pattern: /[\s]/ }}}"
+          v-mask="`X* X* X* X* X*`"
           label="Volledige Naam"
           placeholder="Volledige Naam"
-          :success-message="parseName(schema.full_name).classified"
+          :success-message="parseName(formValues.full_name).classified"
           autocomplete="name"/>
       <TextField
-          v-model="schema.email"
-          v-maska="`X*@X*.X*`"
+          v-model="validationSchema.email"
+          v-mask="`X*@X*.X*`"
           pattern="/^\S+@\S+\.\S+$/"
           name="email"
           type="email"
@@ -25,58 +26,50 @@
           placeholder="E-mailadres"
           autocomplete="email"/>
       <TextField
-          v-model="schema.password"
-          v-maska="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
+          v-model="validationSchema.password"
+          v-mask="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
           :password-meter="true"
           name="password"
           type="password"
-          example-message="Gebruik een mix van karakters, vermijd veelvoorkomende woorden en gebruik geen gedenkwaardige toetsenbordpaden."
-          success-message="✔ Oké"
+          alert-message="Gebruik een mix van karakters, vermijd veelvoorkomende woorden en gebruik geen gedenkwaardige toetsenbordpaden."
           label="Wachtwoord"
           placeholder="Wachtwoord"
           autocomplete="off"/>
       <TextField
-          v-model="schema.confirm_password"
+          v-model="validationSchema.confirm_password"
           :password-meter="true"
           name="confirm_password"
           type="password"
-          success-message="✔ Correct"
           label="Wachtwoord Herhalen"
           placeholder="Wachtwoord Herhalen"
           autocomplete="off"/>
       <TextField
-          v-model="schema.postcode"
+          v-model="validationSchema.postcode"
           name="postcode"
           type="text"
           label="postcode"
-          success-message="✔ Geldig"
           placeholder="Postcode"
-          autocomplete="on"
-          :columns="8"/>
+          autocomplete="on"/>
       <TextField
-          v-model="schema.address"
+          v-model="validationSchema.address"
           name="address"
           type="text"
           label="Adres"
-          success-message="✔ Geldig"
           placeholder="Adres"
-          autocomplete="on"
-          :columns="16"/>
+          autocomplete="on"/>
       <TextField
-          v-model="schema.city"
+          v-model="validationSchema.city"
           name="city"
           type="text"
           label="Plaats"
-          success-message="✔ Geldig"
           placeholder="Plaats"
           autocomplete="on"/>
       <TextField
-          v-model="schema.phone"
-          v-maska="`## #### ####`"
+          v-model="validationSchema.phone"
+          v-mask="`## #### ####`"
           name="phone"
           type="tel"
           label="Telefoon"
-          success-message="✔ Geldig telefoonnummer."
           placeholder="Telefoon"
           autocomplete="tel"/>
       <PrimaryButton type="submit" text="Account Aanmaken"/>
@@ -89,16 +82,15 @@ import TextField from "@/components/forms/elements/TextField.vue";
 import {Form, useForm} from "vee-validate";
 import * as Yup from "yup";
 import StandaloneForm from "@/components/templates/StandaloneForm.vue";
-import SubmitButton from "@/components/buttons/SubmitButton.vue";
 import PrimaryButton from "@/components/buttons/PrimaryButton.vue";
+import {parseName} from '@/mixins'
+import {reactive} from "vue";
 
 export default {
   name: "RegisterForm",
-  components: {PrimaryButton, SubmitButton, StandaloneForm, TextField, Form},
-
-  setup: () => {
-
-    const schema = Yup.object().shape({
+  components: {PrimaryButton, StandaloneForm, TextField, Form},
+  setup() {
+    const validationSchema = Yup.object().shape({
       full_name: Yup.string().required(),
       email: Yup.string().email().required(),
       password: Yup.string().min(6).required(),
@@ -109,7 +101,6 @@ export default {
       city: Yup.string().required(),
       created_on: Yup.date().default(() => new Date()),
     })
-
     const initialValues = {
       full_name: '',
       email: '',
@@ -121,60 +112,39 @@ export default {
       city: '',
     }
 
-    const veeForm = useForm({validationSchema: schema, initialValues})
 
-    function onSubmit(values) {
-      const {fullName, firstName, infix, lastName, classified} = parseName(values.full_name)
+    const formValues = reactive({
+      ...initialValues
+    })
+    const localState = reactive({})
 
-    }
-
-    function stringify(array) {
-      return array.reduce((pre, next) => {
-        return pre + ' ' + next
+    function keydownListener() {
+      window.addEventListener('keydown', (evt) => {
+        const {key} = evt
+        switch (key) {
+          case 'Enter':
+            evt.preventDefault()
+            break;
+        }
       })
     }
 
-    function everythingBetween(array) {
-      array.splice(0, 1)
-      array.splice(array.length - 1, 1)
-      return stringify(array)
-    }
-
-    function countWhitespaces(string) {
-      return string.split(' ').length - 1
-    }
-
-    function parseName(fullName) {
-      let firstName = ''
-      let infix = ''
-      let lastName = ''
-
-      if (fullName && typeof fullName === 'string' && fullName.length) {
-        const stringArray = fullName.split(' ')
-        const spacesCount = countWhitespaces(fullName)
-        firstName = stringArray[0]
-        if (spacesCount >= 1) {
-          lastName = stringArray[stringArray.length - 1]
-        }
-        if (spacesCount > 1) {
-          infix = everythingBetween(stringArray);
-        }
-      }
-
-      const classified = infix ? '✔ voornaam | ✔ tussenvoegsel | ✔ achternaam'
-          : lastName ? '✔ voornaam | ✔ achternaam' : firstName ? `✔ voornaam` : ''
-
-      return {
-        firstName,
-        infix,
-        lastName,
-        fullName,
-        classified
+    function onKeydown(event) {
+      const {key} = event
+      switch (key) {
+        case 'Backspace':
+          break;
+        case 'ArrowDown':
+          break;
       }
     }
-
+    const form = useForm({validationSchema, initialValues})
+    function onSubmit(values) {
+      console.log(values)
+    }
     return {
-      schema,
+      validationSchema,
+      formValues,
       parseName,
       onSubmit,
     };

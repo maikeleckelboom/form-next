@@ -1,14 +1,14 @@
 <template>
   <StandaloneForm title="Inloggen"
                   header-text="Inloggen met je account."
-                  footer-text="ik ben mijn wachtwoord vergeten ..">
+                  footer-text="ik ben mijn wachtwoord vergeten">
     <Form @submit="onSubmit"
-          :validation-schema="validationSchema"
-          class="vee-validation-form"
+          :validation-validationSchema="validationSchema"
+          class="validation-form"
           ref="form">
       <TextField
           v-model="validationSchema.email"
-          v-maska="`X*@X*.X*`"
+          v-mask="`X*@X*.X*`"
           pattern="/^\S+@\S+\.\S+$/"
           name="email"
           type="email"
@@ -17,7 +17,7 @@
           autocomplete="email"/>
       <TextField
           v-model="validationSchema.password"
-          v-maska="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
+          v-mask="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
           name="password"
           type="password"
           label="Wachtwoord"

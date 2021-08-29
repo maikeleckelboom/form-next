@@ -2,12 +2,12 @@
   <StandaloneForm title="Wachtwoord Herstellen"
                   header-text="Een nieuw wachtwoord instellen voor je account.">
     <Form @submit="onSubmit"
-          :validation-schema="schema"
-          class="vee-validation-form"
+          :validation-validationSchema="validationSchema"
+          class="validation-form"
           ref="form">
       <TextField
-          v-model="schema.email"
-          v-maska="`X*@X*.X*`"
+          v-model="validationSchema.email"
+          v-mask="`X*@X*.X*`"
           pattern="/^\S+@\S+\.\S+$/"
           name="email"
           type="email"
@@ -16,8 +16,8 @@
           placeholder="E-mailadres"
           autocomplete="email"/>
       <TextField
-          v-model="schema.password"
-          v-maska="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
+          v-model="validationSchema.password"
+          v-mask="{ mask: 'Z*', tokens: { 'Z': { pattern: /[^\s\\]/ }}}"
           :strength-meter="true"
           name="password"
           type="password"
@@ -27,7 +27,7 @@
           placeholder="Wachtwoord"
           autocomplete="off"/>
       <TextField
-          v-model="schema.confirm_password"
+          v-model="validationSchema.confirm_password"
           :strength-meter="true"
           name="confirm_password"
           type="password"
@@ -51,7 +51,7 @@ export default {
   name: "ResetPasswordForm",
   components: {StandaloneForm, PrimaryButton, TextField, Form},
   setup: () => {
-    const schema = Yup.object().shape({
+    const validationSchema = Yup.object().shape({
       email: Yup.string().email().required(),
       password: Yup.string().min(6).required(),
       confirm_password: Yup.string().required().oneOf([Yup.ref("password")]),
@@ -61,14 +61,14 @@ export default {
       password: '',
       confirm_password: '',
     }
-    useForm({validationSchema: schema, initialValues})
+    useForm({validationSchema: validationSchema, initialValues})
 
     function onSubmit(values) {
       console.log('Submit will be handled here', values)
     }
 
     return {
-      schema,
+      validationSchema,
       onSubmit,
     };
   },

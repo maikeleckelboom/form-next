@@ -3,18 +3,7 @@
     <ContextMessage :message="contextMessage" :meta="meta"/>
     <AlertMessage :message="alertMessage" :meta="meta"/>
     <div class="control" :class="classList()">
-<!--      <div v-if="Array.isArray(value) && value.length" class="checkbox-group">-->
-<!--        meer-->
-<!--        <div v-for="(value, i) in value" :key="i" class="checkbox-wrapper">-->
-<!--          <CustomCheckbox :value="value" :name="name" v-bind="$attrs"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div v-else class="checkbox-group">-->
-<!--        minder-->
-<!--        <CustomCheckbox :value="value" :name="name" v-bind="$attrs"/>-->
-<!--      </div>-->
       <CustomCheckbox :value="value" :name="name" v-bind="$attrs"/>
-
       <FieldLabel :label="label" :for="name" :id="`label-${name}`" ref="label"/>
       <SuccessMessage :message="successMessage" :meta="meta"/>
       <ErrorMessageTooltip v-if="errorsTooltip" :focused="field.focused" :message="errorMessage"/>
