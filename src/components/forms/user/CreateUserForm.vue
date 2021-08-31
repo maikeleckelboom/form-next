@@ -72,8 +72,8 @@
                 :value="ADDRESS_LOOKUP_ENABLED"
                 :name="`ADDRESS_LOOKUP_ENABLED`"
                 :label="ADDRESS_LOOKUP_ENABLED
-                  ? 'Uw adres wordt automatisch aangevuld'
-                  : 'Uw adres handmatig in vullen'"/>
+                  ? 'Automatische aanvulling staat AAN'
+                  : 'Automatische aanvulling staat UIT'"/>
         <!---->
         <TextField v-model="formValues.street_name"
                    :value="formValues.street_name"

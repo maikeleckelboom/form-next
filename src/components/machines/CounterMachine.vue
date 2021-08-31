@@ -1,40 +1,46 @@
 <template>
-  <div id="counter-machine-component">
-    <h2>Finite State Machine</h2>
-    <div class="counter-machine-content">
-      <h5>Current State: {{ state.matches('inactive') ? 'Inactive' : 'Active' }}</h5>
-    </div>
-    <div class="counter-machine-display">
-      <h1>
-        <pre>{{ state.context.count.toFixed(2) }}</pre>
-      </h1>
-    </div>
-    <div class="counter-machine-buttons">
-      <div class="input-group">
-        <label for="incrementValue">Ophoog Waarde</label>
-        <input v-model.number="incrementValue" :disabled="state.matches('inactive')" id="incrementValue" type="number"/>
-      </div>
-    </div>
-    <div class="counter-machine-buttons">
-      <div class="button-group">
-        <button @click="send('TOGGLE')">
-          {{ counterButtonLabel }}
-        </button>
-      </div>
-      <div class="button-group ">
-        <button @click="send('DECREMENT')" :disabled="state.matches('inactive')">
-          Verlagen
-        </button>
-        <button @click="send('INCREMENT')" :disabled="state.matches('inactive')">
-          Ophogen
-        </button>
-      </div>
+  <div class="grid-x counter-machine">
+    <div class="cell small-24 medium-12 ">
+      <header class="app-state-machine-header">
+        <div class="app-state-machine-title">
+          <h1>Counter Machine</h1>
+        </div>
+        <div class="app-state-machine-current">
+          <h2>Current State:</h2>
+          <span class="current-state-text">
+            {{ state.value }}
+          </span>
+        </div>
+      </header>
+      <main class="counter-machine-main">
+        <div class="counter-machine-display">
+          <h1>{{ state.context.count.toFixed(2) }}</h1>
+        </div>
+        <div class="counter-machine-buttons">
+          <div class="input-group">
+            <label for="incrementValue" class="side-label">Ophoogwaarde</label>
+            <input v-model.number="incrementValue" :disabled="state.matches('inactive')"
+                   id="incrementValue" type="number"/>
+          </div>
+          <div class="button-group ">
+            <button @click="send('TOGGLE')">
+              {{ counterButtonLabel }}
+            </button>
+            <button @click="send('DECREMENT')" :disabled="state.matches('inactive')">
+              Verlagen
+            </button>
+            <button @click="send('INCREMENT')" :disabled="state.matches('inactive')">
+              Ophogen
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 </template>
 
 <script>
-import counterMachine from '@/machines/counterMachine'
+import counterMachine from '@/machines/30-08-2021/counterMachine'
 import {useMachine} from "@xstate/vue";
 import {interpret} from "xstate";
 import {ref, computed, watchEffect} from "vue";
@@ -43,7 +49,7 @@ export default {
   name: "CounterMachine",
   setup() {
     const {state, send} = useMachine(counterMachine)
-    const counterService = interpret(counterMachine, {devTools: true})
+    const fetchService = interpret(counterMachine, {devTools: true})
     const current = ref(counterMachine.initialState)
     const incrementValue = ref(1)
 
@@ -56,13 +62,13 @@ export default {
       send({type: 'UPDATE_INCREMENT_VALUE', incrementValue: incrementValue.value || 1})
     })
 
-    counterService.onTransition(state => current.value = state).start();
+    fetchService.onTransition(state => current.value = state).start();
 
     return {
       state,
       send,
       current,
-      counterService,
+      fetchService,
       counterButtonLabel,
       incrementValue
     }
@@ -73,30 +79,56 @@ export default {
 <style lang="scss" scoped>
 @import "./src/scss/abstracts";
 
+.grid-x {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 3rem 0;
+}
 
-#counter-machine-component {
-  display: flex !important;
-  width: 100%;
+.input-group {
+  display: flex;
   flex-direction: column;
+  margin: 0 0 2em 0;
 
-  label {
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.2em;
-    padding-bottom: 0.5em;
-    float: left;
+  input {
+    max-width: 24rem;
+    margin: 0 auto;
   }
+}
 
-  h2 {
-    padding: 1em 0;
-  }
+.side-label {
+  padding: 12px;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
 
-  > * {
-    padding: 2em 1em;
+.counter-machine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .counter-machine-buttons {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+  }
+
+  .counter-machine-display {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    text-align: center;
+
+    > * {
+      font-size: 4em;
+      margin: 0;
+    }
+
+    justify-content: center;
+  }
+
+  .counter-machine-main {
+    display: flex;
+    flex-direction: column;
   }
 
   button {
@@ -118,44 +150,23 @@ export default {
 
     &:hover {
       background: lighten(palevioletred, 10%);
-
     }
-  }
-
-  h1 {
-    font-size: 7em;
   }
 
   .input-group {
     width: 100%;
-  }
 
-  input {
-    width: 100%;
-    background: $white;
-  }
-
-  .counter-machine-display {
-    background: #f5b498;
-  }
-
-  .counter-machine-content {
-    background: #5084af;
-    font-size: 2em;
-    margin: 0;
-    color: white;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
+    input {
+      background: $white;
+    }
 
   }
+
 
   .counter-machine-buttons {
-    background: #5084af;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-flow: row nowrap;
 
     .button-group {
       flex-flow: row nowrap;
@@ -164,18 +175,6 @@ export default {
 
     button {
       margin: 0 2em;
-    }
-
-    &.m-primary {
-    }
-
-    &.m-secondary {
-    }
-
-    &.m-tertiary {
-    }
-
-    .button-group {
     }
   }
 }

@@ -17,7 +17,16 @@ export const question = new URL('/assets/icons/question.svg', import.meta.url)
  * @param ms
  * @returns {Promise<unknown>}
  */
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+export const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+
+/**
+ * Random Integer
+ * @param min
+ * @param max
+ * @returns {*}
+ */
+export const randomInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Tests if a given string is written in uppercase.

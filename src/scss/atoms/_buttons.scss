@@ -55,6 +55,21 @@
   appearance: none;
   outline: none;
   z-index: 1;
+
+  &.disabled,
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  &:focus {
+    background: lighten(#5084AF, 15%);
+  }
+
+  &:hover {
+    background: lighten(#5084AF, 5%);
+  }
 }
 
 .btn-text {

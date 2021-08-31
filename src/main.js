@@ -7,6 +7,7 @@ import "./assets/css/app.css"
 import '@/prototypes'
 import directives from "@/directives";
 
+
 const app = createApp(App)
 
 app.directive('mask', maska)

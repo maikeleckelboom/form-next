@@ -1,57 +1,100 @@
 <template>
-  <div id="">
-    <h2>Finite State Machine</h2>
-    <div class="">
-      <h5>Current State: </h5>
-    </div>
-    <div class="counter-machine-display">
-
-    </div>
-    <div class="counter-machine-buttons">
-
-    </div>
-    <div class="counter-machine-buttons">
-      <div class="button-group">
-        <button @click="send('TOGGLE')">
-          {{ counterButtonLabel }}
+  <div class="grid-x fetch-machine">
+    <div class="cell small-24 medium-12">
+      <div class="app-state-machine-title">
+        <h1>Fetch Machine</h1>
+      </div>
+      <h1 class="poke-title">Pokémon!</h1>
+      <h2 class="poke-slogan">Gotta catch 'em all</h2>
+      <div class="state-machine-actions">
+        <button @click="send('FETCH')" :disabled="!(state.matches('ready') || state.matches('initial'))"
+                :class="{'disabled':!(state.matches('ready') || state.matches('initial'))}" class="btn">
+          Random Pokémon
         </button>
+        <button @click="send('RETRY')" :disabled="!state.matches('failure')"
+                :class="{'disabled':!state.matches('failure')}" class="btn">
+          Opnieuw
+        </button>
+      </div>
+      <div v-if="state.matches('loading')" class="app-state-machine-loading">
+        <FancyLoader/>
+      </div>
+      <div v-if="state.matches('ready') || state.matches('success')" class="main-wrapper">
+        <header class="state-machine-header">
+          <div class="state-heading">
+            <p class="poke-title misc">{{ state.context.pokemons.species.name }}</p>
+            <img :src="state.context.pokemons.sprites.front_default" class="poke-image" alt=""/>
+          </div>
+        </header>
+        <main class="main-wrapper">
+          <div>
+            <h3>Type</h3>
+            <p>{{ state.context.pokemons.types.map((type) => type.type.name).join(', ').toUpperCase() }}</p>
+          </div>
+          <div>
+            <h3>Abilities</h3>
+            <p>
+              {{ state.context.pokemons.abilities.map((ability) => ability.ability.name).join(', ').toUpperCase() }}</p>
+          </div>
+          <div class="stats-wrapper">
+            <h3>Stats</h3>
+            <div>
+              <p v-for="(stat, i) in state.context.pokemons.stats" :key="i" class="text-line">
+                <span class="key-stat">{{ stat.stat.name }}</span>
+                : <span class="base-stat">{{ stat.base_stat }}</span>
+              </p>
+            </div>
+            <div v-for="(stat, i) in state.context.pokemons.stats" :key="i">
+              <p v-if="stat.effort" class="text-line">
+                <span class="key-stat">effort</span>
+                : <span class="base-stat">{{ stat.effort }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="text-line">
+                <span class="key-stat">weight</span> :
+                <span class="base-stat">{{ state.context.pokemons.weight / 100 }}kg</span>
+              </p>
+            </div>
+            <div>
+              <p class="text-line">
+                <span class="key-stat">base experience</span> :
+                <span class="base-stat">{{ state.context.pokemons.base_experience }}</span>
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div v-if="state.matches('failure')" class="error-title">
+        <h4>Er is een fout opgetreden. - Waarschijnlijkheid van slagen is 60%.</h4>
+        <p>{{ state.context.error.message }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import counterMachine from '@/machines/counterMachine'
+import fetchMachine from '@/machines/31-08-2021/fetchMachine'
 import {useMachine} from "@xstate/vue";
 import {interpret} from "xstate";
-import {ref, computed, watchEffect} from "vue";
+import {ref} from "vue";
+import FancyLoader from "@/components/misc/FancyLoader.vue";
 
 export default {
   name: "FetchMachine",
+  components: {FancyLoader},
   setup() {
-    const {state, send} = useMachine(counterMachine)
-    const counterService = interpret(counterMachine, {devTools: true})
-    const current = ref(counterMachine.initialState)
-    const incrementValue = ref(1)
+    const {state, send} = useMachine(fetchMachine)
+    const fetchService = interpret(fetchMachine, {devTools: true})
+    const current = ref(fetchMachine.initialState)
 
-    const counterButtonLabel = computed(() => {
-      const current = state.value
-      return current.matches('active') ? 'Deactivate' : current.matches('inactive') ? 'Activate' : '😱'
-    })
-
-    watchEffect(() => {
-      send({type: 'UPDATE_INCREMENT_VALUE', incrementValue: incrementValue.value || 1})
-    })
-
-    counterService.onTransition(state => current.value = state).start();
+    fetchService.onTransition(state => current.value = state).start();
 
     return {
       state,
       send,
       current,
-      counterService,
-      counterButtonLabel,
-      incrementValue
+      fetchService,
     }
   },
 }
@@ -59,111 +102,108 @@ export default {
 
 <style lang="scss" scoped>
 @import "./src/scss/abstracts";
+@import url("https://fonts.googleapis.com/css?family=Bangers&display=swap");
 
+.text-line {
+  display: grid;
+  grid-template-columns: 220px 78px 68px;
+  justify-items: start;
+}
 
-#counter-machine-component {
-  display: flex !important;
-  width: 100%;
+.stats-wrapper {
+  grid-column: 1/-1;
+  justify-content: center;
+  display: grid;
+}
+
+.main-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 2rem 0;
+
+  @include set-breakpoint(tablet, down) {
+    margin-bottom: 0;
+  }
+}
+
+.grid-x {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.state-machine-actions {
+  max-width: 24rem;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2em;
+}
+
+.fetch-machine {
+  position: relative;
+  display: flex;
+  justify-content: center;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 
-  label {
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.2em;
-    padding-bottom: 0.5em;
-    float: left;
-  }
-
-  h2 {
-    padding: 1em 0;
-  }
-
-  > * {
-    padding: 2em 1em;
+  > .cell {
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
-  button {
-    padding: 1em 1em;
-    border-radius: 1em;
-    box-shadow: none;
-    border: none;
-    background-color: palevioletred;
-    color: white;
-    font-weight: 600;
-    font-size: 1em;
-    cursor: pointer;
-    transition: ease all 180ms;
-
-    &[disabled] {
-      background: lighten(palevioletred, 10%);
-      opacity: 0.3;
-    }
-
-    &:hover {
-      background: lighten(palevioletred, 10%);
-
-    }
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff21;
+    filter: blur(2px);
+    z-index: 0;
+    pointer-events: none;
   }
 
-  h1 {
-    font-size: 7em;
-  }
-
-  .input-group {
+  > * {
     width: 100%;
   }
+}
 
-  input {
-    width: 100%;
-    background: $white;
-  }
+.poke-title {
+  font-family: 'bangers', 'sans-serif';
+  font-size: 3em;
+  margin-bottom: 0;
 
-  .counter-machine-display {
-    background: #f5b498;
-  }
-
-  .counter-machine-content {
-    background: #5084af;
-    font-size: 2em;
-    margin: 0;
-    color: white;
+  &.misc {
+    font-size: 6em;
     font-weight: 500;
-    display: flex;
-    flex-direction: column;
-
   }
+}
 
-  .counter-machine-buttons {
-    background: #5084af;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: row nowrap;
+.error-title {
+  margin: 2em 0;
+  font-size: 2em;
+}
 
-    .button-group {
-      flex-flow: row nowrap;
-      display: flex;
-    }
+.poke-image {
+  width: 22em;
+  height: 22em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  image-rendering: pixelated;
+}
 
-    button {
-      margin: 0 2em;
-    }
-
-    &.m-primary {
-    }
-
-    &.m-secondary {
-    }
-
-    &.m-tertiary {
-    }
-
-    .button-group {
-    }
-  }
+.poke-slogan {
+  transform: skew(-10deg);
+  font-family: 'bangers', 'sans-serif';
+  font-size: 2em;
+  font-weight: 400;
+  color: #105993;
+  margin-top: 0.05em;
 }
 </style>
